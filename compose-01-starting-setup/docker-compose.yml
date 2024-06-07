@@ -1,0 +1,45 @@
+services:
+  mongodb:
+    image: "mongo"
+    volumes:
+      - "data:/data/db"
+    #    environment:
+    ##     MONGO_INITDB_ROOT_USERNAMEGO_INITDB_ROOT_USERNAME=admin
+    #      MONGO_INITDB_ROOT_USERNAME: "admin"
+    #      MONGO_INITDB_ROOT_PASSWORD: "secret"
+    env_file:
+      - ./env/mongo.env
+  backend:
+    build: ./backend
+    #    build:
+    #      context: ./backend
+    ##      we can use dockerfile to specify the dockerfile name
+    #      dockerfile: Dockerfile-dev
+    #      args:
+    #        some_arg: "some_value"
+    ports:
+      - "80:80"
+    volumes:
+      - "goals_logs:/app/logs"
+#      Bind mount (live code update), `./` is the current directory
+      - "./backend:/app"
+#        Anonymous volume
+      - "/app/node_modules"
+    env_file:
+      - "./env/backend.env"
+    depends_on:
+        - "mongodb"
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - "./frontend/src:/app/src:ro"
+      - "/app/node_modules"
+
+    depends_on:
+      - "backend"
+volumes:
+  data:
+  goals_logs:
