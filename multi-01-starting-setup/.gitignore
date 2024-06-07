@@ -1,7 +1,6 @@
 node_modules
 package-lock.json
 
-.env
 .git
 .DS_Store
 .idea
